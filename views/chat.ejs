@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Stlye by Reazon -->
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        background-color: transparent;
+        font-family: sans-serif;
+        border: 0;
+      }
+      body {
+        background-color: #191919;
+        /* background-clip: ; */
+      }
+      .header {
+        position: sticky;
+        top: 0;
+        background-color: orange;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .header h2 {
+        color: white;
+        margin: 1rem;
+      }
+      .chat-container {
+        display: grid;
+        align-items: center;
+        margin: 1rem;
+      }
+
+      chat {
+        width: fit-content;
+        height: fit-content;
+        margin: 10px 0 0 0;
+        background-color: rgb(255, 255, 255, 0.1);
+        border-radius: 0.37rem;
+        padding: 10px 12px;
+        display: grid;
+        color: white;
+        position: relative;
+        word-break: break-all;
+      }
+      chat[user] {
+        margin: 5px 0 0 auto;
+      }
+      chat[alert] {
+        font-size: small;
+        margin: 4px auto;
+        text-align: center;
+        max-width: 70vw;
+        background-color: rgb(255, 255, 255, 0.1);
+      }
+
+      chat[data-name]::before {
+        display: block;
+        content: attr(data-name);
+        font-size: 0.7em;
+        position: absolute;
+        top: -7px;
+        left: -3px;
+        background-color: var(--clr);
+        padding: 3px 5px;
+        border-radius: 5px;
+        color: currentColor;
+        /* width: 100%; */
+      }
+      chat[data-time]::after {
+        content: attr(data-time);
+        text-align: right;
+        font-size: 0.7em;
+        color: rgb(255, 255, 255, 0.5);
+        /* position: absolute;
+        bottom: 0;
+        right: 0; */
+      }
+
+      timestamp {
+        color: #fcfcfc;
+        font-size: 10px;
+        margin-left: auto;
+      }
+
+      .form-input {
+        background-color: rgb(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        padding: 10px 0;
+        width: 100%;
+      }
+      .form-input input[type="text"] {
+        outline: none;
+        color: #fff;
+        margin: 0 5px 0 15px;
+        width: 100%;
+      }
+
+      .form-input button {
+        margin: 0 15px 0 0;
+        color: #fff;
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+
+    <title><%= room %> | RepliChat</title>
+  </head>
+  <body>
+    <!-- chat -->
+
+    <div class="header">
+      <h2>◈ <%= room %></h2>
+      <h2>⁝</h2>
+    </div>
+    <div class="chat-container" id="chat">
+      <chat alert>Pesan ini tak dienkripsi atau bersifat publik. Diharap anda tidak mempercayai siapapun termasuk developer.</chat>
+      <chat alert> Anda bergabung ke <%= room %> sebagai <%= name %> </chat>
+      <!-- <chat user>hi!</chat>
+      <chat user data-time="00:34">im, robby</chat>
+      <chat user data-time="00:34">i from indonesia</chat>
+      <chat data-name="Haru" data-time="00:34" >hi! robby</chat>
+      <chat data-name="Haru" data-time="00:34" style="--clr: rgba(255, 0, 98, 0.2)">welcome</chat> -->
+    </div>
+
+    <form class="form-input">
+      <input class="input-message" type="text" placeholder="Ketik disini" id="chatValue" required />
+      <button type="submit" class="button" id="chatSend">kirim</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const message = document.getElementById("chatValue");
+      const chatSend = document.getElementById("chatSend");
+      const chat = document.getElementById("chat");
+      let nama = "<%= name %>";
+      let room = "<%= room%>";
+      let color = createColors();
+
+      // make random color
+
+      function inputData(message, type) {
+        socket.emit(room, {
+          userName: nama,
+          message,
+          type,
+          id: socket.id,
+          time: newTime(),
+          colors: color,
+        });
+      }
+
+      function printChat({ userName, message, type, id, time, colors }) {
+        let chatList = document.createElement("chat");
+        if (type === "chat") {
+          id == socket.id ? chatList.setAttribute("user", "") : chatList.setAttribute("data-name", userName);
+          // chatList.innerHTML += `<p>${message}</p><timestamp class="text-light">${time}</timestamp>`;
+          chatList.setAttribute("data-time", time);
+        } else if (type === "alert") {
+          chatList.setAttribute("alert", "");
+        }
+        if (colors) {
+          chatList.setAttribute("style", "--clr:" + colors + ";");
+        }
+        chatList.innerText = message;
+        chat.appendChild(chatList);
+        chat.scrollTop = chat.scrollHeight;
+      }
+
+      function newTime() {
+        let time = new Date();
+        time = `${time.getHours() > 9 ? "" : "0"}${time.getHours()}:${time.getMinutes() > 9 ? "" : "0"}${time.getMinutes()}`;
+        return time;
+      }
+
+      chatSend.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (message.value) {
+          inputData(message.value, "chat");
+          printChat({ userName: nama, message: message.value, type: "chat", id: socket.id, time: newTime() });
+
+          message.value = "";
+        }
+      });
+
+      function createColors() {
+        let colors = [
+          [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), 0],
+          [Math.floor(Math.random() * 255), 0, Math.floor(Math.random() * 255)],
+          [0, Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)],
+        ];
+
+        const result = colors[Math.floor(Math.random() * colors.length)];
+
+        return `rgb(${result[0]},${result[1]},${result[2]},0.2)`;
+      }
+
+      socket.on(room, (data) => {
+        printChat(data);
+      });
+    </script>
+  </body>
+</html>

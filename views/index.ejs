@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Stlye by Reazon -->
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        background-color: transparent;
+        color: white;
+        font-family: sans-serif;
+
+        /* uji coba */
+        /* background-color: rgb(226, 147, 0, 0.5) !important; */
+        /* border: 1px solid crimson !important; */
+      }
+      body {
+        background-color: #191919;
+      }
+      .header {
+        position: sticky;
+        top: 0;
+        background-color: rgb(255, 165, 0);
+
+        width: 100%;
+        display: flex;
+        align-items: center;
+      }
+      .header h2 {
+        color: white;
+        margin: 1rem;
+      }
+      .login-form {
+        display: grid;
+        align-content: flex-end;
+        height: 70vh;
+        width: 100%;
+        max-width: 89rem;
+        margin: auto;
+        padding: 0 10px;
+        position: relative;
+      }
+      .login-form span {
+        color: orange;
+        word-break: normal;
+        font-size: 3em;
+      }
+      .login-form P {
+        color: #e29300;
+        /* word-break: normal; */
+        font-size: 1em;
+        margin: 0 0 1rem 1em;
+      }
+      .input {
+        padding: 5px;
+        border-radius: 0.2rem;
+        border: 1px solid rgba(255, 166, 0, 0.246);
+        margin: 0.2rem;
+        color: orange;
+        background-color: #2c2c2c;
+      }
+      input {
+        width: 1fr;
+      }
+      .input:valid,
+      .input:focus {
+        outline: 1px solid #e29300;
+      }
+      .input::placeholder {
+        color: #774d00;
+      }
+      .btn {
+        background-color: rgb(255, 165, 0, 0.4);
+        border: 1px solid rgb(255, 165, 0, 0.5);
+        padding: 4px 7px;
+        border-radius: 0.2rem;
+        outline: none;
+      }
+      .btn:hover {
+        background-color: #e29300;
+      }
+      .grub {
+        /* width: 100%; */
+        /* display: flex; */
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+        padding: 5px;
+      }
+      .chek {
+        display: flex;
+        align-items: center;
+      }
+      .chek input {
+        margin: 0.5rem;
+      }
+      .input-input {
+        display: grid;
+        /* width: 100%; */
+        max-width: 360px;
+        height: 100%;
+        padding: 5px;
+        background-color: #222222;
+        /* border: 1px solid orange; */
+        border-radius: 12px;
+        /* margin: 0 1rem; */
+        /* margin-left: auto; */
+      }
+    </style>
+
+    <title>Live Chat</title>
+  </head>
+  <body dark>
+    <div class="header">
+      <h2>◈ Join</h2>
+    </div>
+    <form action="/rooms" method="post" class="login-form">
+      <span> WELCOME TO REPLICHAT</span>
+      <p>Simple public chat</p>
+
+      <div class="input-input">
+        <input type="text" name="name" placeholder="userName" id="login-name" class="input" minlength="5" maxlength="25" required />
+        <input id="inputRoom" type="text" class="input" name="room" placeholder="room" id="login-room" required />
+        <div class="grub">
+          <input type="button" value="random" class="btn" onclick="getRandom()" />
+          <input type="submit" value="gabung" class="btn" id="loginButton" />
+        </div>
+      </div>
+    </form>
+
+    <script>
+      const inputRoom = document.getElementById("inputRoom");
+      function getRandom() {
+        let rooms = "<%= rooms %>".split(",");
+
+        if (rooms.length < 1) return alert("no rooms has created!");
+        let randomNumber = Math.floor(Math.random() * rooms.length);
+        inputRoom.value = rooms[randomNumber];
+      }
+    </script>
+    <noscript>turn on your javascrip uy.</noscript>
+  </body>
+</html>
