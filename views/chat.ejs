@@ -25,6 +25,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        backdrop-filter: blur(3px);
       }
       .header h2 {
         color: white;
@@ -47,6 +48,9 @@
         color: white;
         position: relative;
         word-break: break-all;
+      }
+      chat:last-child {
+        margin-bottom: 2rem !important;
       }
       chat[user] {
         margin: 5px 0 0 auto;
@@ -97,6 +101,7 @@
         left: 0;
         padding: 10px 0;
         width: 100%;
+        backdrop-filter: blur(3px);
       }
       .form-input input[type="text"] {
         outline: none;
@@ -174,7 +179,7 @@
         }
         chatList.innerText = message;
         chat.appendChild(chatList);
-        chat.scrollTop = chat.scrollHeight;
+        window.scrollTo(0, document.body.scrollHeight);
       }
 
       function newTime() {
